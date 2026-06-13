@@ -1,0 +1,37 @@
+{
+  "name": "dux_contract",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "DuDex functionality - Issue token: DUX Support token pairs: DUX/USDT DUX/USDC DUX/WETH WETH/USDT WETH/USDC",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sevenyd/dux_contract.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sevenyd/dux_contract/issues"
+  },
+  "homepage": "https://github.com/sevenyd/dux_contract#readme",
+  "dependencies": {
+    "ethers": "^6.15.0",
+    "fs-extra": "^11.3.1",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^24.10.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
