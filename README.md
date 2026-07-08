@@ -2,7 +2,7 @@
 
 [![Foundry](https://img.shields.io/badge/framework-Foundry-blueviolet.svg)](https://book.getfoundry.sh/)
 
-> Part of the [DuxFi](duxfi.com) ecosystem - A DeFi simulation platform running on Sepolia testnet.
+> Part of the [DuxFi](duxfi.com) ecosystem - A DeFi simulation platform running on Base Sepolia testnet.
 
 A decentralized exchange (DEX) smart contract developed based on the Foundry framework, implementing Uniswap V2-like Automated Market Maker (AMM) functionality.
 
