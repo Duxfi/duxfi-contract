@@ -6,7 +6,7 @@
 
 A decentralized exchange (DEX) smart contract developed based on the Foundry framework, implementing Uniswap V2-like Automated Market Maker (AMM) functionality.
 
-**⚠️ Important**: This project runs on Sepolia testnet. All tokens are test tokens with no real value. This is an educational platform for learning DeFi concepts.
+**⚠️ Important**: This project runs on Base Sepolia testnet. All tokens are test tokens with no real value. This is an educational platform for learning DeFi concepts.
 
 ## Features
 
@@ -131,8 +131,8 @@ DU_DEPLOY_ADDRESS=0x...
 # Gas fee payment account
 DU_GAS_WALLET_PUBLIC_ADDRESS=0x...
 
-# Sepolia RPC
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_API_KEY
+# Base Sepolia RPC
+SEPOLIA_RPC_URL=https://base-sepolia.publicnode.com
 
 # Etherscan verification
 ETHERSCAN_API_KEY=YOUR_API_KEY
