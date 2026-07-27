@@ -8,7 +8,7 @@ pragma solidity 0.8.19;
  */
 library FixedPoint {
     uint224 constant Q112 = 2 ** 112;
-
+    // forge-lint: disable-next-line
     struct uq112x112 {
         uint224 _x;
     }
@@ -38,8 +38,8 @@ library FixedPoint {
      * @return z The decoded uint112.
      */
     function decode(uint224 x) internal pure returns (uint112 z) {
-        // forge-lint: disable-next-line(unsafe-typecast)
-        // casting to 'uint112' is safe because x/Q112 result is guaranteed to fit in uint112
+         // casting to 'uint112' is safe because x/Q112 result is guaranteed to fit in uint112
+         // forge-lint: disable-next-line(unsafe-typecast)
         z = uint112(x / Q112);
     }
 
@@ -75,8 +75,8 @@ library FixedPoint {
 
         uint256 r = (numerator << 112) / denominator;
         require(r <= type(uint224).max, "FixedPoint::fraction: overflow");
-        // forge-lint: disable-next-line(unsafe-typecast)
         // casting to 'uint224' is safe because we've checked that r <= type(uint224).max
+        // forge-lint: disable-next-line(unsafe-typecast)
         result = uq112x112({ _x: uint224(r) });
     }
 }

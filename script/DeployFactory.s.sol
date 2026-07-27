@@ -35,7 +35,8 @@ contract DeployFactory is Script {
     function _updateChainConfig(address factoryAddress) internal {
         string memory configPath = string.concat("frontend/chain_", vm.toString(block.chainid), ".json");
 
-        if (vm.exists(configPath)) {
+        if (vm.exists(configPath)) {    
+            // forge-lint: disable-next-line(unsafe-cheatcode)
             string memory json = vm.readFile(configPath);
             string memory newJson = "{\n";
             newJson = string.concat(newJson, '  "chainId": ', vm.toString(block.chainid), ",\n");
@@ -53,6 +54,7 @@ contract DeployFactory is Script {
             }
 
             newJson = string.concat(newJson, "}");
+            // forge-lint: disable-next-line(unsafe-cheatcode)
             vm.writeFile(configPath, newJson);
         } else {
             string memory newJson = string.concat(
@@ -61,13 +63,14 @@ contract DeployFactory is Script {
                 '  "DuxFactory": "', vm.toString(factoryAddress), "\"\n",
                 "}"
             );
+            // forge-lint: disable-next-line(unsafe-cheatcode)
             vm.writeFile(configPath, newJson);
         }
 
         console2.log("Chain config updated at:", configPath);
     }
 
-    function _safeReadAddress(string memory json, string memory key) internal returns (address) {
+    function _safeReadAddress(string memory json, string memory key) internal pure returns (address) {
         // Safe read address with try/catch, return address(0) if not found
         try vm.parseJson(json, key) returns (bytes memory data) {
             if (data.length == 0) return address(0);

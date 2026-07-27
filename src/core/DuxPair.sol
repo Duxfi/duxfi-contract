@@ -55,8 +55,8 @@ contract DuxPair is ERC20, IDuxPair, ReentrancyGuard, Pausable, Ownable {
        STATE VARIABLES
        ============================== */
 
-    uint256 private reserve0; // Current balance of token0
-    uint256 private reserve1; // Current balance of token1
+    uint112 private reserve0; // Current balance of token0
+    uint112 private reserve1; // Current balance of token1
     uint32 private blockTimestampLast; // Last block timestamp of reserve update
 
     /// @notice Token0 of the pair (sorted by address)
@@ -77,10 +77,10 @@ contract DuxPair is ERC20, IDuxPair, ReentrancyGuard, Pausable, Ownable {
        EVENTS
        ============================== */
 
-    event LiquidityAdded(
-        address indexed sender, uint256 actualDeposit0, uint256 actualDeposit1, uint256 lpTokenMinted
+    event LiquidityAdded(address indexed sender, uint256 actualDeposit0, uint256 actualDeposit1, uint256 lpTokenMinted);
+    event LiquidityRemoved(
+        address indexed sender, uint256 amount0, uint256 amount1, uint256 lpTokenBurned, address indexed to
     );
-    event LiquidityRemoved(address indexed sender, uint256 amount0, uint256 amount1, uint256 lpTokenBurned, address indexed to);
     event Sync(uint256 reserve0, uint256 reserve1, uint256 totalSupply, uint32 timestamp);
     event Swap(
         address indexed sender,
@@ -256,8 +256,8 @@ contract DuxPair is ERC20, IDuxPair, ReentrancyGuard, Pausable, Ownable {
      * @param _newReserve1 New reserve amount of token1
      */
     function _syncPoolState(uint256 _newReserve0, uint256 _newReserve1) internal {
-        uint256 _reserve0 = reserve0;
-        uint256 _reserve1 = reserve1;
+        uint112 _reserve0 = reserve0;
+        uint112 _reserve1 = reserve1;
         uint32 blockTimestamp = uint32(block.timestamp);
 
         uint32 timeElapsed = blockTimestamp - blockTimestampLast;
@@ -267,8 +267,12 @@ contract DuxPair is ERC20, IDuxPair, ReentrancyGuard, Pausable, Ownable {
                 price1CumulativeLast += uint256(FixedPoint.fraction(_reserve0, _reserve1)._x) * timeElapsed;
             }
         }
-        reserve0 = _newReserve0;
-        reserve1 = _newReserve1;
+        // casting to 'uint112' is safe because _newReserve0 and _newReserve1 are uint256
+        // and uint112 is 112 bits, which is less than 256 bits.
+        // forge-lint: disable-next-line(unsafe-typecast)
+        reserve0 = uint112(_newReserve0);
+        // forge-lint: disable-next-line(unsafe-typecast)
+        reserve1 = uint112(_newReserve1);
         blockTimestampLast = blockTimestamp;
         uint256 _totalSupply = totalSupply();
         emit Sync(_newReserve0, _newReserve1, _totalSupply, blockTimestamp);

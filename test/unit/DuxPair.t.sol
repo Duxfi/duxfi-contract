@@ -50,10 +50,10 @@ contract DuxPairTokenTest is BaseFixture, LiquidityFixture {
 
         // USER2 executes transferFrom - should fail
         vm.startPrank(USER2);
+        
         bool success = pair.transferFrom(USER1, recipient, transferAmount);
-        vm.stopPrank();
-
         assertTrue(success, "transferFrom should succeed");
+        vm.stopPrank();
         assertEq(pair.balanceOf(USER1), lpBalance - transferAmount, "USER1 balance should decrease");
         assertEq(pair.balanceOf(recipient), transferAmount, "Recipient should receive tokens");
     }
@@ -69,6 +69,7 @@ contract DuxPairTokenTest is BaseFixture, LiquidityFixture {
         // Try transferFrom without sufficient approval
         vm.startPrank(USER2);
         vm.expectRevert();
+        // forge-lint: disable-next-line(erc20-unchecked-transfer)
         pair.transferFrom(USER1, address(0x1234), lpBalance);
         vm.stopPrank();
     }
@@ -86,6 +87,7 @@ contract DuxPairTokenTest is BaseFixture, LiquidityFixture {
         // USER2 tries to transfer amount exceeding balance
         vm.startPrank(USER2);
         vm.expectRevert();
+        // forge-lint: disable-next-line(erc20-unchecked-transfer)
         pair.transferFrom(USER1, address(0x1234), excessiveAmount);
         vm.stopPrank();
     }
@@ -115,6 +117,7 @@ contract DuxPairTokenTest is BaseFixture, LiquidityFixture {
 
         vm.startPrank(USER1);
         vm.expectRevert();
+        // forge-lint: disable-next-line(erc20-unchecked-transfer)
         pair.transfer(address(0x1234), excessiveAmount);
         vm.stopPrank();
     }

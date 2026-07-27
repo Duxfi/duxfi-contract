@@ -58,8 +58,9 @@ contract ConfigureFauceToken is Script {
         console2.log("DuxFaucet configured successfully");
     }
 
-    function getDuxFaucetAddress() internal returns (address payable) {
+    function getDuxFaucetAddress() internal view returns (address payable) {
         string memory path = string.concat("frontend/chain_", vm.toString(block.chainid), ".json");
+        // forge-lint: disable-next-line(unsafe-cheatcode)
         string memory json = vm.readFile(path);
         return payable(json.readAddress(".DuxFaucet"));
     }

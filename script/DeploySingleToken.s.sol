@@ -31,6 +31,7 @@ contract DeploySingleToken is Script {
             vm.toString(address(token)),
             "\n"
         );
+        // forge-lint: disable-next-line(unsafe-cheatcode)
         vm.writeLine(filePath, entry);
         console2.log("Token info appended to:", filePath);
     }

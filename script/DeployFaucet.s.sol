@@ -21,13 +21,13 @@ contract DeployFaucet is Script {
         console2.log("Deployer:", deployerAddress);
 
         vm.startBroadcast();
-        
+
         faucet = new DuxFaucet();
 
         vm.stopBroadcast();
 
         console2.log("DuxFaucet deployed at:", address(faucet));
-        
+
         // Update chain config
         _updateChainConfig(address(faucet));
     }
@@ -36,6 +36,7 @@ contract DeployFaucet is Script {
         string memory configPath = string.concat("frontend/chain_", vm.toString(block.chainid), ".json");
 
         if (vm.exists(configPath)) {
+                // forge-lint: disable-next-line(unsafe-cheatcode)
             string memory json = vm.readFile(configPath);
             // Build new JSON, preserve existing fields
             string memory newJson = "{\n";
@@ -54,23 +55,27 @@ contract DeployFaucet is Script {
 
             newJson = string.concat(newJson, '  "DuxFaucet": "', vm.toString(faucetAddress), "\"\n");
             newJson = string.concat(newJson, "}");
-
+            // forge-lint: disable-next-line(unsafe-cheatcode)
             vm.writeFile(configPath, newJson);
         } else {
             string memory newJson = string.concat(
                 "{\n",
-                '  "chainId": ', vm.toString(block.chainid), ",\n",
-                '  "DuxFaucet": "', vm.toString(faucetAddress), "\"\n",
+                '  "chainId": ',
+                vm.toString(block.chainid),
+                ",\n",
+                '  "DuxFaucet": "',
+                vm.toString(faucetAddress),
+                "\"\n",
                 "}"
             );
+            // forge-lint: disable-next-line(unsafe-cheatcode)
             vm.writeFile(configPath, newJson);
         }
 
         console2.log("Chain config updated at:", configPath);
     }
 
-    function _safeReadAddress(string memory json, string memory key) internal returns (address) {
-
+    function _safeReadAddress(string memory json, string memory key) internal pure returns (address) {
         try vm.parseJson(json, key) returns (bytes memory data) {
             if (data.length == 0) return address(0);
             return abi.decode(data, (address));

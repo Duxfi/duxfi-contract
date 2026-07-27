@@ -6,10 +6,10 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract DuCoin is ERC20, Ownable {
     uint8 private immutable DECIMALS;
-    
+
     // Minter role management
     mapping(address => bool) public minters;
-    
+
     event MinterAdded(address indexed minter);
     event MinterRemoved(address indexed minter);
 
@@ -25,21 +25,25 @@ contract DuCoin is ERC20, Ownable {
     }
 
     modifier onlyMinter() {
-        require(minters[msg.sender], "DuCoin: caller is not minter");
+        _onlyMinter();
         _;
+    }
+
+    function _onlyMinter() internal view {
+        require(minters[msg.sender], "DuCoin: caller is not minter");
     }
 
     function mint(address to, uint256 amount) external onlyMinter {
         _mint(to, amount);
     }
-    
+
     function addMinter(address minter) external onlyOwner {
         require(minter != address(0), "DuCoin: minter is zero address");
         require(!minters[minter], "DuCoin: minter already exists");
         minters[minter] = true;
         emit MinterAdded(minter);
     }
-    
+
     function removeMinter(address minter) external onlyOwner {
         require(minters[minter], "DuCoin: minter does not exist");
         minters[minter] = false;

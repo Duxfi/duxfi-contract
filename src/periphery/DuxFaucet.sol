@@ -155,7 +155,7 @@ contract DuxFaucet is Ownable, ReentrancyGuard, Pausable {
     function unpause() external onlyOwner {
         _unpause();
     }
-
+    // forge-lint: disable-next-line(mixed-case-function)
     function withdrawETH() external onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0, "No ETH to withdraw");

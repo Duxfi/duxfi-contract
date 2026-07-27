@@ -25,25 +25,27 @@ contract DeployRouter is Script {
         console2.log("DuxFactory address:", factoryAddress);
 
         vm.startBroadcast();
-        
+
         router = new DuxRouter(factoryAddress);
 
         vm.stopBroadcast();
 
         console2.log("DuxRouter deployed at:", address(router));
-        
+
         // Update chain config
         _updateChainConfig(address(router));
     }
 
     function getFactoryAddress() internal view returns (address) {
         string memory path = string.concat("frontend/chain_", vm.toString(block.chainid), ".json");
+        // forge-lint: disable-next-line(unsafe-cheatcode)
         string memory json = vm.readFile(path);
         return json.readAddress(".DuxFactory");
     }
 
     function _updateChainConfig(address routerAddress) internal {
         string memory configPath = string.concat("frontend/chain_", vm.toString(block.chainid), ".json");
+        // forge-lint: disable-next-line(unsafe-cheatcode)
         string memory json = vm.readFile(configPath);
         address factoryAddress = json.readAddress(".DuxFactory");
 
@@ -60,7 +62,7 @@ contract DeployRouter is Script {
         }
 
         newJson = string.concat(newJson, "}");
-
+        // forge-lint: disable-next-line(unsafe-cheatcode)
         vm.writeFile(configPath, newJson);
         console2.log("Chain config updated at:", configPath);
     }

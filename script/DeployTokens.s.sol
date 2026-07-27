@@ -15,12 +15,12 @@ contract DeployTokens is Script {
 
     function faucetTokens() private pure returns (TokenConfig[] memory) {
         TokenConfig[] memory configs = new TokenConfig[](9);
-        configs[0] = TokenConfig({name: "Dux Coin", symbol: "DUX", decimals: 18});
-        configs[1] = TokenConfig({name: "Bitcoin", symbol: "BTC", decimals: 8});
-        configs[2] = TokenConfig({name: "Tether USD", symbol: "USDT", decimals: 6});
-        configs[3] = TokenConfig({name: "Ethereum", symbol: "ETH", decimals: 18});
-        configs[4] = TokenConfig({name: "Solana", symbol: "SOL", decimals: 18});
-        configs[5] = TokenConfig({name: "USDC", symbol: "USDC", decimals: 6});
+        configs[0] = TokenConfig({name: "USDC", symbol: "USDC", decimals: 6});
+        configs[1] = TokenConfig({name: "Tether USD", symbol: "USDT", decimals: 6});
+        configs[2] = TokenConfig({name: "Dux Coin", symbol: "DUX", decimals: 18});
+        configs[3] = TokenConfig({name: "Bitcoin", symbol: "BTC", decimals: 8});
+        configs[4] = TokenConfig({name: "Ethereum", symbol: "ETH", decimals: 18});
+        configs[5] = TokenConfig({name: "Solana", symbol: "SOL", decimals: 18});
         configs[6] = TokenConfig({name: "DAI", symbol: "DAI", decimals: 18});
         configs[7] = TokenConfig({name: "LINK", symbol: "LINK", decimals: 18});
         configs[8] = TokenConfig({name: "OKX Coin", symbol: "OKB", decimals: 18});
@@ -65,6 +65,7 @@ contract DeployTokens is Script {
         json = string.concat(json, "}");
 
         string memory tokenListPath = string.concat("frontend/dux_tokens_", vm.toString(block.chainid), ".json");
+        // forge-lint: disable-next-line(unsafe-cheatcode)
         vm.writeFile(tokenListPath, json);
         console2.log("Token config file generated at:", tokenListPath);
     }

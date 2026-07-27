@@ -38,6 +38,7 @@ contract DeployCores is Script {
         json = string.concat(json, "}");
 
         string memory configPath = string.concat("frontend/chain_", vm.toString(block.chainid), ".json");
+        // forge-lint: disable-next-line(unsafe-cheatcode)
         vm.writeFile(configPath, json);
         console2.log("Chain config file generated at:", configPath);
     }
