@@ -5,9 +5,9 @@ import {console} from "forge-std/Test.sol";
 import {BaseFixture} from "../shared/fixtures/BaseFixture.sol";
 import {LiquidityFixture} from "../shared/fixtures/LiquidityFixture.sol";
 import {MockERC} from "../mocks/MockERC.sol";
-import {DuxFactory} from "../../src/core/DuxFactory.sol";
-import {DuxPair} from "../../src/core/DuxPair.sol";
-import {DuxRouter} from "../../src/periphery/DuxRouter.sol";
+import {DuxFactory} from "@dex/core/DuxFactory.sol";
+import {DuxPair} from "@dex/core/DuxPair.sol";
+import {DuxRouter} from "@dex/periphery/DuxRouter.sol";
 
 /**
  * @title DuxRouterTest

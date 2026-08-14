@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {console} from "forge-std/Test.sol";
-import {DuxPair} from "../../src/core/DuxPair.sol";
+import {DuxPair} from "@dex/core/DuxPair.sol";
 import {BaseFixture} from "../shared/fixtures/BaseFixture.sol";
 import {LiquidityFixture} from "../shared/fixtures/LiquidityFixture.sol";
 

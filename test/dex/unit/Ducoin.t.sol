@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {Test} from "forge-std/Test.sol";
-import {DuCoin} from "../../src/core/DuCoin.sol";
+import {DuCoin} from "@dex/core/DuCoin.sol";
 
 /**
  * @title DuCoinTest

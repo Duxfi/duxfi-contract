@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import {BaseFixture} from "./BaseFixture.sol";
 import {console} from "forge-std/console.sol";
-import {DuxPair} from "../../../src/core/DuxPair.sol";
+import {DuxPair} from "@dex/core/DuxPair.sol";
 import {MockERC} from "../../mocks/MockERC.sol";
 
 contract LiquidityFixture is BaseFixture {

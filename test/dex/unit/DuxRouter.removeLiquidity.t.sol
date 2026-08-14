@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {DuxRouter} from "../../src/periphery/DuxRouter.sol";
+import {DuxRouter} from "@dex/periphery/DuxRouter.sol";
 import {BaseFixture} from "../shared/fixtures/BaseFixture.sol";
 import {LiquidityFixture} from "../shared/fixtures/LiquidityFixture.sol";
 import {MockERC} from "../mocks/MockERC.sol";
-import {DuxPair} from "../../src/core/DuxPair.sol";
+import {DuxPair} from "@dex/core/DuxPair.sol";
 
 /**
  * @title DuxRouterTest

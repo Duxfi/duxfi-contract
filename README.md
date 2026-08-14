@@ -21,31 +21,67 @@ A decentralized exchange (DEX) smart contract developed based on the Foundry fra
 ## Project Structure
 
 ```
-dux_contract/
-├── src/
-│   ├── core/              # Core contracts
-│   │   ├── DuxFactory.sol # Factory contract - create and manage pairs
-│   │   ├── DuxPair.sol    # Pair contract - AMM core logic
-│   │   ├── DuCoin.sol     # Project token
-│   │   └── interfaces/    # Interface definitions
-│   ├── periphery/         # Periphery contracts
-│   │   ├── DuxRouter.sol  # Router contract - user interaction entry
-│   │   ├── DuxFaucet.sol  # Faucet contract - test token distribution
-│   │   └── libraries/     # Utility libraries
-│   └── libraries/         # Shared libraries
-│       ├── FixedPoint.sol # Fixed point arithmetic
-│       └── Math.sol       # Math operations
-├── script/                # Deployment scripts
-│   ├── DeployCores.s.sol  # Deploy core contracts
-│   ├── DeployTokens.s.sol # Deploy test tokens
-│   └── ConfigureDuxFaucet.s.sol
-├── test/                  # Test files
-│   ├── unit/              # Unit tests
-│   ├── integration/        # Integration tests
-│   └── fuzz/              # Fuzz tests
-├── frontend/               # Frontend configuration
-│   └── abis/              # ABI files
-└── broadcast/             # Deployment broadcast records
+duxfi-contract/
+├── src/dex/
+│   ├── core/                          # Core contracts
+│   │   ├── DuCoin.sol                 # Project token (ERC20 + mintable)
+│   │   ├── DuxFactory.sol             # Factory - create and manage pairs
+│   │   ├── DuxPair.sol                # Pair - AMM core logic (mint/burn/swap/TWAP)
+│   │   ├── interfaces/
+│   │   │   ├── IDuxCallee.sol         # Flashswap callback interface
+│   │   │   ├── IDuxFactory.sol        # Factory interface
+│   │   │   └── IDuxPair.sol           # Pair interface
+│   │   └── libraries/
+│   │       └── Math.sol               # Math operations for core
+│   ├── libraries/
+│   │   └── FixedPoint.sol             # Fixed-point arithmetic (uq112x112)
+│   └── periphery/                     # Periphery contracts
+│       ├── DuxRouter.sol              # Router - user entry (add/remove liq, swap)
+│       ├── DuxFaucet.sol              # Faucet - test token distribution
+│       ├── interfaces/
+│       │   └── IDuxRouter.sol         # Router interface
+│       └── libraries/
+│           ├── DuxLibrary.sol         # Router helpers (getAmountOut/In, sortTokens)
+│           └── DuxTWAPOracleLibrary.sol # TWAP price oracle helper
+├── script/dex/
+│   ├── DeployCoreContracts.s.sol      # Deploy DuxFactory, DuxRouter, DuxFaucet
+│   ├── DeployTokens.s.sol             # Deploy test tokens (USDC, USDT, DUX, BTC, ...)
+│   ├── DeploySingleToken.s.sol        # Deploy a single DuCoin token
+│   └── DeployAddTokensToFaucet.s.sol  # Add a token to DuxFaucet
+├── test/dex/
+│   ├── unit/                          # Unit tests
+│   │   ├── Ducoin.t.sol
+│   │   ├── DuxFactory.t.sol
+│   │   ├── DuxFaucet.t.sol
+│   │   ├── DuxPair.t.sol              # Pair baseline
+│   │   ├── DuxPair.admin.t.sol        # Pair admin (fee setter, pause)
+│   │   ├── DuxPair.mint.t.sol         # add liquidity
+│   │   ├── DuxPair.burn.t.sol         # remove liquidity
+│   │   ├── DuxPair.swap.t.sol         # swap
+│   │   ├── DuxPairAmm.t.sol           # AMM math
+│   │   ├── DuxRouter.t.sol            # Router baseline
+│   │   ├── DuxRouter.addLiquidity.t.sol
+│   │   ├── DuxRouter.removeLiquidity.t.sol
+│   │   └── DuxRouter.swap.t.sol
+│   ├── integration/                   # Integration tests
+│   │   ├── DuxIntegrationTest.t.sol
+│   │   └── DuxEdgeCaseIntegrationTest.t.sol
+│   ├── fuzz/                          # Fuzz / invariant tests
+│   │   ├── DuxPairFuzz.t.sol
+│   │   └── DuxRouterFuzz.t.sol
+│   ├── mocks/
+│   │   └── MockERC.sol                # Mock ERC20 for tests
+│   ├── shared/
+│   │   └── fixtures/                  # Reusable test fixtures
+│   │       ├── BaseFixture.sol
+│   │       ├── EventFixture.sol
+│   │       ├── LiquidityFixture.sol
+│   │       └── RouterFixture.sol
+│   └── utils/
+│       └── SwapLib.sol                # Test helpers for swaps
+├── frontend/                          # Frontend configuration
+│   └── abis/                          # ABI files
+└── broadcast/                         # Deployment broadcast records
 ```
 
 ## Core Contracts
@@ -91,15 +127,27 @@ Project governance token.
 Test faucet contract for distributing test tokens to facilitate user interaction on DuxFi.com.
 
 **Main Features:**
-- `claimDaily()` - Claim daily test tokens (24-hour cooldown)
-- `setTokens()` - Admin set claimable tokens and daily limits
-- `removeToken()` - Admin remove token
-- `getTokens()` - Query all claimable tokens
+- `claimDaily()` - Claim all enabled tokens at once (configurable cooldown, default 24h)
+- `addToken(token, dailyAmount)` - Admin add a token to the claimable list (max 50 tokens)
+- `updateToken(token, dailyAmount, enabled)` - Admin update token amount / enable-disable
+- `removeToken(token)` - Admin remove a token from the list
+- `getTokens()` - Query all configured tokens
+- `setCooldown(newCooldown)` - Admin set claim cooldown (max 30 days)
+- `pause() / unpause()` - Emergency stop / resume
+
+**Events:**
+- `TokenAdded(token, dailyAmount)`
+- `TokenUpdated(token, dailyAmount, enabled)`
+- `TokenRemoved(token)`
+- `TokenClaimed(user, timestamp, tokens[], amounts[])` - aggregated event per claim
+- `CooldownChanged(oldCooldown, newCooldown)`
 
 **Features:**
-- 24-hour cooldown based on blockchain timestamp
-- Support multi-token claiming
+- Cooldown based on blockchain timestamp (default 24h, configurable)
+- Multi-token claiming in a single transaction
 - Admin can dynamically configure token list and claim limits
+- ReentrancyGuard + Pausable + Ownable access control
+- ETH and ERC20 recovery via `withdrawETH()` / `withdrawERC20()`
 
 ## Environment Requirements
 
@@ -154,19 +202,59 @@ make cov        # Generate test coverage report
 ```
 
 ## Deployment
-### Development Environment Anvil Deployment Process
+
+### Quick Start with Makefile
+
+The project provides Makefile targets for common deployment flows. All commands
+read RPC and Etherscan keys from `.env` based on the `NET` selector.
+
 ```bash
-# 1 Start anvil node (use --state parameter to specify state file)
-# delete existing state file if any
-rm ./anvil-state.json
-#start local anvil node and save chain state
-@anvil --state ./anvil-state.json --port http://localhost:8545
-# deploy contracts
-@echo "Transferring 1000 ETH to deployer...$(DU_DEPLOY_ADDRESS)"
-@cast send $(DU_DEPLOY_ADDRESS) --value 1000ether --private-key $(ANVIL_ACCOUNT_0_PRIVATE_KEY) --rpc-url $(LOCAL_RPC_URL_9000) -vvvv
-@echo "Transferring 900 ETH to gas wallet...$(DU_GAS_WALLET_PUBLIC_ADDRESS)"
-@cast send $(DU_GAS_WALLET_PUBLIC_ADDRESS) --value 900ether --private-key $(ANVIL_ACCOUNT_0_PRIVATE_KEY) --rpc-url http://localhost:8545 -vvvv
+# Start a local Anvil node (state persisted to ./anvil-state.json)
+make a
+
+# Fund deployer and gas wallet from Anvil account 0
+make a-setup
+
+# Deploy everything (Factory + Router + Faucet + Tokens) to local
+make a-d
+make a-d-faucet   # then add tokens to faucet (requires FAUCET_ADDRESS/TOKEN_ADDRESS/DAILY_AMOUNT)
+
+# Deploy only DuxFaucet (does not touch Factory/Router)
+make deploy-faucet NET=local
+make deploy-faucet NET=sepolia VERIFY=1
+make deploy-faucet NET=base-sepolia VERIFY=1
+
+# Add a token to an existing Faucet (human-readable amount + decimals)
+make faucet-add-token \
+  NET=local \
+  FAUCET_ADDRESS=0x... \
+  TOKEN_ADDRESS=0x... \
+  TOKEN_DECIMAL=6 \
+  AMOUNT_UNIT=10000
 ```
+
+### Manual Deployment (forge script / forge create)
+
+```bash
+# 1. Start anvil node (delete existing state file if any)
+rm ./anvil-state.json
+anvil --state ./anvil-state.json --port 9000 --block-time 12
+
+# 2. Deploy core contracts (DuxFactory, DuxRouter, DuxFaucet)
+forge script script/dex/DeployCoreContracts.s.sol:DeployCoreContracts \
+  --rpc-url http://localhost:9000 --private-key $DU_DEPLOY_PRIVATE_KEY --broadcast -vv
+
+# 3. Deploy test tokens (USDC, USDT, DUX, BTC, ETH, SOL, DAI, LINK, OKB)
+forge script script/dex/DeployTokens.s.sol:DeployTokens \
+  --rpc-url http://localhost:9000 --private-key $DU_DEPLOY_PRIVATE_KEY --broadcast -vv
+
+# 4. Add a token to the faucet (tokenDecimal + amountUnit, raw amount computed inside)
+forge script script/dex/DeployAddTokensToFaucet.s.sol \
+  --sig "run(address,address,uint256,uint256)" \
+  $FAUCET_ADDRESS $TOKEN_ADDRESS 6 10000 \
+  --rpc-url http://localhost:9000 --private-key $DU_DEPLOY_PRIVATE_KEY --broadcast -vv
+```
+
 ### Export ABI Creation
 ```bash
 # must deploy contracts first and then run this command to generate new ABI files

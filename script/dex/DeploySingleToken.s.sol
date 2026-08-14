@@ -2,8 +2,12 @@
 pragma solidity ^0.8.19;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {DuCoin} from "../src/core/DuCoin.sol";
+import {DuCoin} from "@dex/core/DuCoin.sol";
 
+/**
+ * @title DeploySingleToken
+ * @notice Script to deploy a single token using Du DuCoin contract
+ */
 contract DeploySingleToken is Script {
     function run(string memory name, string memory symbol, uint8 decimals) public {
         console2.log("=== Deploying Token ===");

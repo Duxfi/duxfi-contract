@@ -4,8 +4,8 @@ pragma solidity ^0.8.19;
 
 import {RouterFixture} from "../shared/fixtures/RouterFixture.sol";
 import {LiquidityFixture} from "../shared/fixtures/LiquidityFixture.sol";
-import {DuxPair} from "../../src/core/DuxPair.sol";
-import {DuxRouter} from "../../src/periphery/DuxRouter.sol";
+import {DuxPair} from "@dex/core/DuxPair.sol";
+import {DuxRouter} from "@dex/periphery/DuxRouter.sol";
 import {MockERC} from "../mocks/MockERC.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 

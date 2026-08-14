@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {DuxPair} from "../../src/core/DuxPair.sol";
+import {DuxPair} from "@dex/core/DuxPair.sol";
 
 library SwapLib {
     uint256 constant SWAP_FEE_BPS = 30;

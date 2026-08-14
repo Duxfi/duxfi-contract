@@ -2,8 +2,8 @@
 pragma solidity ^0.8.19;
 
 import {BaseFixture} from "./BaseFixture.sol";
-import {DuxRouter} from "../../../src/periphery/DuxRouter.sol";
-import {DuCoin} from "../../../src/core/DuCoin.sol";
+import {DuxRouter} from "@dex/periphery/DuxRouter.sol";
+import {DuCoin} from "@dex/core/DuCoin.sol";
 
 
 

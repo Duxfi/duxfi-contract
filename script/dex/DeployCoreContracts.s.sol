@@ -2,11 +2,15 @@
 pragma solidity ^0.8.19;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {DuxFactory} from "../src/core/DuxFactory.sol";
-import {DuxRouter} from "../src/periphery/DuxRouter.sol";
-import {DuxFaucet} from "../src/periphery/DuxFaucet.sol";
+import {DuxFactory} from "@dex/core/DuxFactory.sol";
+import {DuxRouter} from "@dex/periphery/DuxRouter.sol";
+import {DuxFaucet} from "@dex/periphery/DuxFaucet.sol";
 
-contract DeployCores is Script {
+/**
+ * @title DeployCoreContracts
+ * @notice Script to deploy core contracts (DuxFactory, DuxRouter, DuxFaucet)
+ */
+contract DeployCoreContracts is Script {
     DuxFactory public factory;
     DuxRouter public router;
     DuxFaucet public duxFaucet;

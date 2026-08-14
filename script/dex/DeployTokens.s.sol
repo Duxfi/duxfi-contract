@@ -2,8 +2,12 @@
 pragma solidity ^0.8.19;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {DuCoin} from "../src/core/DuCoin.sol";
+import {DuCoin} from "@dex/core/DuCoin.sol";
 
+/**
+ * @title DeployTokens
+ * @notice Script to deploy multiple tokens using DuCoin contract
+ */
 contract DeployTokens is Script {
     struct TokenConfig {
         string name;
